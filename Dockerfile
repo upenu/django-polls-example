@@ -1,13 +1,18 @@
-FROM python:2.7
-Maintainer Brian Sang <sang.bri@gmail.com>
+FROM ubuntu:zesty
 
-RUN pip install Django==1.10.2
-RUN pip install argparse==1.2.1
-RUN pip install wsgiref==0.1.2
+RUN apt-get update && apt-get install -y \
+    git \
+    python2.7 \
+    python-pip \
+    --no-install-recommends
 
-ADD . /myapp
-WORKDIR /myapp
+RUN mkdir -p /opt/src/app
+WORKDIR /opt/src/app
+
+RUN git clone https://github.com/upenu/django-polls-example.git .
+
 RUN pip install -r requirements.txt
+RUN /usr/bin/python2.7 manage.py makemigrations
+RUN /usr/bin/python2.7 manage.py migrate
 
-EXPOSE 80
-CMD python manage.py runserver 0.0.0.0:80
+CMD ["/usr/bin/python2.7", "manage.py", "runserver", "0.0.0.0:80"]
